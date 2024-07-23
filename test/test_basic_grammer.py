@@ -21,13 +21,19 @@ def test_db_connect():
         username="pra_owner",
         pwd="SMHQ0C9Ngrhn",
     )
-
+    # pg_client = Pg_client(
+    #     port=5432,
+    #     host="localhost",
+    #     db="postgres",
+    #     username="postgres",
+    #     pwd="1234",
+    # )
     pg_table_name = "fv_clear"
     oracle_table_name = "fv_clear"
     # 获取pg 表字段
     pg_cols_list=pg_client.get_table_schema(pg_table_name)
     for pg_col in pg_cols_list:
-        print(pg_col)
+        print(pg_col.__dict__)
     #获取oracle 表定义
     # oracle_cols_list=oracle_client.get_table_schema(oracle_table_name)
 
