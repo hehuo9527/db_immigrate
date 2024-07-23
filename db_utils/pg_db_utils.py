@@ -1,5 +1,6 @@
-import psycopg2
 
+import psycopg2
+from entity.schema import *
 
 class Pg_client:
 
@@ -23,9 +24,9 @@ class Pg_client:
             )
             self.cur = self.db.cursor()
             self.cur.execute("SELECT version()")
-            ping_res = self.cur.fetchall()
+            self.cur.fetchall()
             print()
-            print("connect pg success")
+            print("connect pg success !")
         except Exception as e:
             print("connect pg failed !", e)
 
@@ -34,60 +35,17 @@ class Pg_client:
         self.db.close()
         pass
 
-    def query_all(self, sql):
-        """
-        查询sql
-        :return:执行结果
-        """
-        self.cur.execute(sql)
-        rows = self.cur.fetchall()
-        return rows
-
     def get_table_schema(self, table_name):
-        query_sql = """SELECT a.attnum, a.attname AS field, t.typname AS type, a.attlen AS length, a.atttypmod AS lengthvar, a.attnotnull AS notnull
-                       FROM pg_class c, pg_attribute a, pg_type t
-                       WHERE c.relname='fv_clear' and a.attnum > 0 and a.attrelid = c.oid and a.atttypid = t.oid
-                       ORDER BY a.attnum"""
-        self.cur.execute(query_sql)
-        list = self.cur.fetchall()
-        for col in list:
-            col_name = col[0]
-            col_type = col[1]
-            col_not_null = col[2]
-            
-            pass
-        return None
+        query_sql = f"""select	a.attnum,	a.attname as field,	t.typname as type,	a.attnotnull as notnull,	a.attlen as length,	a.atttypmod as lengthvar
+                        from  pg_class c,	pg_attribute a,	pg_type t 
+                        where 	c.relname = '{table_name}'	and a.attnum > 0	and a.attrelid = c.oid	and a.atttypid = t.oid
+                        order by 	a.attnum"""
+        print(self.cur)
+        # self.cur.execute(query_sql)
+        # list = self.cur.fetchall()
+        # cols=[]
+        # for col in list:
+        #     db_filed=DB_Field(col[1],col[2],col[3])
+        #     cols.append(db_filed)
+        # return cols
 
-    # TODO 这个函数不知道什么作用,暂时保留
-    # def gettabledes_pg(self, table_schema, table_name):
-    #     sql = "select row_number() over ()   as 序号,\
-    #         t.column_name          as 字段名称,\
-    #         pt.typname            as 字段类型,\
-    #         case a.attnotnull when true then '是' else '否' end        as 允许空值\
-    #         d.description         as 字段说明,\
-    #         coalesce(character_maximum_length, numeric_precision, -1) as 字段长度,\
-    #         from information_schema.columns t,\
-    #         pg_attribute a,\
-    #         pg_description d,\
-    #         pg_class c,\
-    #         pg_type pt,\
-    #         pg_namespace pn\
-    #         where d.objoid = a.attrelid\
-    #             and d.objsubid = a.attnum\
-    #             and a.attname = t.column_name\
-    #             and a.attnum > 0\
-    #             and a.atttypid = pt.oid\
-    #             and a.attrelid = c.oid\
-    #             and c.relnamespace = pn.""oid""\
-    #             and c.relname = t.table_name\
-    #             and pn.nspname = t.table_schema\
-    #             and t.table_schema = '" + table_schema + "'\
-    #             and t.table_name = '" + table_name + "';"
-    #     # print(sql)
-    #     list = []
-    #     results = self.query_all(sql)
-    #     # print(result)
-    #     for row in results:
-    #         list.append(row[1])
-    #     print(self.getsqldict_pg(list, result))
-    #     return self.getsqldict_pg(list, result)

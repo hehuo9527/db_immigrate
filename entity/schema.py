@@ -1,4 +1,4 @@
-class db_field:
+class DB_Field:
     type_default_value = {
         "bpchar": "*",
         "varchar": "*",
@@ -10,9 +10,5 @@ class db_field:
         self.col_name = col_name
         self.col_type = col_type
         self.col_notnull = col_notnull
-        if self.col_notnull:
-            self.value = None
-        else:
-            if col_type:
-                self.value = self.type_default_value["bpchar"]
-        pass
+        self.col_default_value=self.type_default_value[col_type]
+
