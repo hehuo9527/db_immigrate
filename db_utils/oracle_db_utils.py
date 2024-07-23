@@ -34,27 +34,22 @@ class Oracle_client:
         self.cur.close()  # 关闭游标
         self.db.close()  # 关闭数据库
 
-    def query_all(self, table_name):
+    def query(self, sql):
         """
         查询sql
         :return:执行结果
         """
-        sql = f"select * from {table_name}"
         d1 = self.cur.execute(sql)  # 执行sql
         rows = d1.fetchall()
         return rows
 
     def get_table_schema(self, table_name):
-        query_sql = f"""select	a.attnum,	a.attname as field,	t.typname as type,	a.attnotnull as notnull,	a.attlen as length,	a.atttypmod as lengthvar
-                        from  pg_class c,	pg_attribute a,	pg_type t 
-                        where 	c.relname = '{table_name}'	and a.attnum > 0	and a.attrelid = c.oid	and a.atttypid = t.oid
-                        order by 	a.attnum"""
+        query_sql = f"""SELECT    COLUMN_NAME AS field
+                        FROM      USER_TAB_COLUMNS 
+                        WHERE     TABLE_NAME ='{table_name}'
+                        ORDER BY     COLUMN_ID"""
         self.cur.execute(query_sql)
         list = self.cur.fetchall()
-        cols=[]
-        for col in list:
-            db_filed=DB_Field(col[1],col[2],col[3])
-            cols.append(db_filed)
-        return cols
+        return list
 
 
