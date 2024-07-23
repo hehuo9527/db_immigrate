@@ -41,11 +41,11 @@ class Pg_client:
                         where 	c.relname = '{table_name}'	and a.attnum > 0	and a.attrelid = c.oid	and a.atttypid = t.oid
                         order by 	a.attnum"""
         print(self.cur)
-        # self.cur.execute(query_sql)
-        # list = self.cur.fetchall()
-        # cols=[]
-        # for col in list:
-        #     db_filed=DB_Field(col[1],col[2],col[3])
-        #     cols.append(db_filed)
-        # return cols
+        self.cur.execute(query_sql)
+        list = self.cur.fetchall()
+        cols=[]
+        for col in list:
+            db_filed=DB_Field(col[1],col[2],col[3])
+            cols.append(db_filed)
+        return cols
 
