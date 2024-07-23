@@ -16,32 +16,38 @@ def test_db_connect():
     )
 
     pg_client = Pg_client(
-        port=5432,
-        host="localhost",
-        db="postgres",
-        username="postgres",
-        pwd="1234",
+    host = pg_configs["pg_db1"]["host"],
+    port = pg_configs["pg_db1"]["port"],
+    db = pg_configs["pg_db1"]["db"],
+    username = pg_configs["pg_db1"]["username"],
+    pwd = pg_configs["pg_db1"]["password"],
     )
+    
     pg_table_name = "fv_clear"
-    oracle_table_name = "fv_clear"
+    oracle_table_name = "FV_CLEAR"
     # 获取pg 表字段
     pg_cols_list=pg_client.get_table_schema(pg_table_name)
-    tar_get_cols=[]
-    for pg_col in pg_cols_list:
-        tar_get_cols.append(pg_col.name)
+
 
     #获取oracle 表定义
     oracle_cols_list=oracle_client.get_table_schema(oracle_table_name)
     for oracle_col in list(oracle_cols_list):
-        if  oracle_col not in tar_get_cols:
-            del oracle_cols_list[tar_get_cols]
+        filter_pg_cols_list=[ col for col in pg_cols_list if col.col_name == oracle_col[0].lower()]
+        pg_cols_list=filter_pg_cols_list
+
 
     # 获取 oracle数据
-    sql_query_oracle="select " + " ".join(oracle_cols_list) + " from fv_clear"
+    select_col=",".join(col.col_name for col in pg_cols_list)
+    sql_query_oracle="select " + select_col + f" from {oracle_table_name}"
     oracle_data_list=oracle_client.query(sql_query_oracle)
-    insert_table_name=""
-    inser_sql=" insert into " + insert_table_name + " ( " + ",".join(oracle_cols_list) +" ) " + " values "  + " ( " + ",".join(oracle_data_list) +" );"
-    print("insert sql is --->",inser_sql)
+    for row in oracle_data_list:
+        for col, value in zip(pg_cols_list, row):
+            if value is not None :
+                col.col_default_value = value
+
+    for pg_col in pg_cols_list:
+        inser_sql=" insert into " + pg_table_name + " ( " + ",".join(final_oracle_cols_list) +" ) " + " values "  + " ( " + ",".join(final_data_list[0]) +" );"
+        print("insert sql is --->",inser_sql)
         
     # 查找匹配数据
     # 若不允许为空则给默认值
