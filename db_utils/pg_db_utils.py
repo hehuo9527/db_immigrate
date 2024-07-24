@@ -1,6 +1,6 @@
 import psycopg2
 from entity.schema import *
-
+from typing import List
 
 class Pg_client:
 
@@ -35,12 +35,11 @@ class Pg_client:
         self.db.close()
         pass
 
-    def get_table_schema(self, table_name) -> list[DB_Field]:
+    def get_table_schema(self, table_name) -> List[DB_Field]:
         query_sql = f"""select	a.attnum,	a.attname as field,	t.typname as type,	a.attnotnull as notnull,	a.attlen as length,	a.atttypmod as lengthvar
                         from  pg_class c,	pg_attribute a,	pg_type t 
                         where 	c.relname = '{table_name}'	and a.attnum > 0	and a.attrelid = c.oid	and a.atttypid = t.oid
                         order by 	a.attnum"""
-        print(self.cur)
         self.cur.execute(query_sql)
         list = self.cur.fetchall()
         cols = []

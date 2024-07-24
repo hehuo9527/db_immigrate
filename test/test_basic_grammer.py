@@ -85,3 +85,12 @@ def test_db_connect():
         print("insert sql is --->", inser_sql)
         with open("res.sql", "a") as file:
             file.write(inser_sql + "\n")
+
+def test_test_pg_online():
+     pg_client = Pg_client(
+        host="ep-snowy-glitter-a1k95b2n.ap-southeast-1.aws.neon.tech",
+        port=5432,
+        db="pra",
+        username="pra_owner",
+        pwd="SMHQ0C9Ngrhn",
+    )
