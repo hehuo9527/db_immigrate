@@ -39,8 +39,8 @@ class Oracle_client:
         查询sql
         :return:执行结果
         """
-        d1 = self.cur.execute(sql)  # 执行sql
-        rows = d1.fetchall()
+        self.cur.execute(sql)  # 执行sql
+        rows = self.cur.fetchall()
         return rows
 
     def get_table_schema(self, table_name):
@@ -48,6 +48,7 @@ class Oracle_client:
                         FROM      USER_TAB_COLUMNS 
                         WHERE     TABLE_NAME ='{table_name}'
                         ORDER BY     COLUMN_ID"""
+        print(query_sql)
         self.cur.execute(query_sql)
         list = self.cur.fetchall()
         return list
