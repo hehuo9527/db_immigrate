@@ -50,7 +50,10 @@ class Oracle_client:
                         ORDER BY     COLUMN_ID"""
         print(query_sql)
         self.cur.execute(query_sql)
-        list = self.cur.fetchall()
-        return list
+        rows = self.cur.fetchall()
+        res=[]
+        for col in  rows:
+            res.append(col[0].lower())
+        return res
 
 
