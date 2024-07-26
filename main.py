@@ -1,10 +1,10 @@
-import json
+
 
 from conf.db_config import *
 
 from db_utils.oracle_db_utils import *
 from db_utils.pg_db_utils import *
-import json, os,copy
+import  os,copy
 
 def get_db_clients(oracle_db_name,pg_db_name)->tuple[Oracle_client,Pg_client]:
     oracle_client = Oracle_client(
@@ -24,7 +24,6 @@ def get_db_clients(oracle_db_name,pg_db_name)->tuple[Oracle_client,Pg_client]:
     return oracle_client,pg_client
 
 def removeNotMatchCols(pg_cols_list,oracle_col_list):
-
     del_col_pg=[]
     for col in pg_cols_list:
         if col.col_name not in oracle_col_list:
@@ -34,7 +33,7 @@ def removeNotMatchCols(pg_cols_list,oracle_col_list):
         pg_cols_list.remove(del_col)
     return pg_cols_list
 
-def construct_col_data_dict(oracle_data_list,pg_cols_list)-:
+def construct_col_data_dict(oracle_data_list,pg_cols_list):
     col_data_list = []
     for row in oracle_data_list:
         on_dict = {}
@@ -64,10 +63,19 @@ def main():
     pg_table_name = "fv_asset_fund_real"
 
     output_path = "E:\\sz\\实时估值测试\\博时POC\\POC数据\\脚本"
+
+    manual_config= True
+    manual_dict={ 
+        # 需要替换值的字段 {拼接字符      [提供替换值的字段]}
+        "col1":{"connect_str":"","cols":["col2","col3"]},
+        "col2":{"connect_str":"@","cols":["col3","col3"]}
+    }
+
+    
     oracle_client,pg_client =get_db_clients(oracle_db_name=oracle_client_db_name,pg_db_name=pg_client_db_name)
 
     if not os.path.exists(output_path):
-            os.mkdir(output_path)
+        os.mkdir(output_path)
 
     if os.path.exists(f"{output_path}/{pg_table_name}.sql"):
         os.remove(f"{output_path}/{pg_table_name}.sql")
@@ -87,7 +95,7 @@ def main():
     if where_statment:
         sql_query_oracle+= "  where  "+where_statment
     oracle_data_list = oracle_client.query(sql_query_oracle)
-    
+
     # col_data_list = []
     # for row in oracle_data_list:
     #     on_dict = {}
@@ -108,6 +116,13 @@ def main():
     #                 tmp_originpg_col.col_default_value = v
     #     final_origin_pg_cols_list.append(tmp_all_cols)
     final_origin_pg_cols_list=supplement_dict(part_col_data_list=col_data_list,origin_pg_cols_list=origin_pg_cols_list)
+
+
+    if manual_config is True:
+        for final_ob in final_origin_pg_cols_list:#{"a":"aaa","b":"bbbb","c":"cccc","d":"ddd","e":"eee","f":"sss"}
+            for replace_col,connect_dict in  manual_dict.items():
+                    replace_value=connect_dict["connect_str"].join(final_ob[col] for col in connect_dict["cols"])
+                    final_ob[replace_col]=replace_value
 
     # 拼接sql 写入文件
     for final_obj in final_origin_pg_cols_list:

@@ -94,3 +94,17 @@ def test_test_pg_online():
         username="pra_owner",
         pwd="SMHQ0C9Ngrhn",
     )
+
+
+def test_res():
+    res={"a":"aaa","b":"bbbb","c":"cccc","d":"ddd","e":"eee","f":"sss"}
+    manual_dict={ 
+        # 需要替换值的字段 {拼接字符      [提供替换值的字段]}
+        "a":{"connect_str":"","cols":["c","d"]},
+        "b":{"connect_str":"@","cols":["e","f"]}
+    }
+
+    for k,connect_dict in manual_dict.items():
+        replace_value=connect_dict["connect_str"].join(res[col] for col in connect_dict["cols"])
+        res[k]=replace_value
+    print(res)

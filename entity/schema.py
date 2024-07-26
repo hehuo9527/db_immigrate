@@ -1,8 +1,8 @@
 class DB_Field:
     type_default_value = {
-        "bpchar": "*",
+        "bpchar": "*", 
         "varchar": "*",
-        "int4": 20991231,
+        "int4": 20991231, 
         "numeric": 0,
     }
 
