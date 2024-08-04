@@ -100,8 +100,8 @@ def test_res():
     res={"a":"aaa","b":"bbbb","c":"cccc","d":"ddd","e":"eee","f":"sss"}
     manual_dict={ 
         # 需要替换值的字段 {拼接字符      [提供替换值的字段]}
-        "a":{"connect_str":"","cols":["c","d"]},
-        "b":{"connect_str":"@","cols":["e","f"]}
+        "a":{"connect_str":"","cols":["c","d","f"]},
+        "b":{"connect_str":"@","cols":["e","f","d"]}
     }
 
     for k,connect_dict in manual_dict.items():

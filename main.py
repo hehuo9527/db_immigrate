@@ -111,7 +111,7 @@ def main():
     # for col_data in col_data_list:
     #     tmp_all_cols = copy.deepcopy(origin_pg_cols_list)
     #     for k, v in col_data.items():
-    #         for tmp_originpg_col in tmp_all_cols:
+    #         for tmp_originpg_col in tmp_all_cols:``
     #             if tmp_originpg_col.col_name == k:
     #                 tmp_originpg_col.col_default_value = v
     #     final_origin_pg_cols_list.append(tmp_all_cols)
@@ -119,9 +119,14 @@ def main():
 
 
     if manual_config is True:
-        for final_ob in final_origin_pg_cols_list:#{"a":"aaa","b":"bbbb","c":"cccc","d":"ddd","e":"eee","f":"sss"}
+        for final_obj in final_origin_pg_cols_list:#final_obj [col1_obj,col2_obj,col3_obj,col4_obj]
             for replace_col,connect_dict in  manual_dict.items():
-                    replace_value=connect_dict["connect_str"].join(final_ob[col] for col in connect_dict["cols"])
+                    cols_value=[]
+                    for col in connect_dict['cols']:
+                        for obj in final_obj:
+                            if obj.col_name==col:
+                                cols_value.append(obj.col_default_value)
+                    replace_value=connect_dict["connect_str"].join(cols_value)
                     final_ob[replace_col]=replace_value
 
     # 拼接sql 写入文件
@@ -149,6 +154,15 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # main()
+    manual_dict={ 
+        # 需要替换值的字段 {拼接字符      [提供替换值的字段]}
+        "col1":{"connect_str":"","cols":["a","e"]},
+        "col2":{"connect_str":"@","cols":["b","f"]}
+    }
+    final_ob={"a":"aaa","b":"bbbb","c":"cccc","d":"ddd","e":"eee","f":"sss"}
+    for k,v in manual_dict.items():
+        replace_value=v["connect_str"].join(final_ob[col] for col in v["cols"])
+        print(replace_value)
     pass
 
